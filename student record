@@ -1,0 +1,194 @@
+#include<bits/stdc++.h>
+using namespace std;
+struct Student {
+    int roll_no;
+    int marks;
+};
+// input student details
+void inputStudents(Student students[], int &n) {
+    cout << "Enter the number of students: ";
+    cin >> n;
+    for (int i = 0; i < n; i++) {
+        cout << "Enter roll no. for student " << i + 1 << " : ";
+        cin >> students[i].roll_no;
+        cout << "Enter marks for student " << i + 1 << " (enter -1 if marks are missing) : ";
+        cin >> students[i].marks;
+    }
+    cout << endl;
+}
+// check and display students with missing marks
+bool Missing(Student students[], int n) {
+    bool missing = false;
+    bool found = false;  // Flag to check if any missing marks exist
+    cout << "List of students with missing marks: " << endl;
+    for (int i = 0; i < n; i++) {
+        if (students[i].marks == -1) {
+            found = true;
+            cout << "Roll no. " << students[i].roll_no << endl;
+            missing = true;
+        }
+    }
+    if (!found) {
+        cout << "None" << endl;
+    }
+    cout << endl;
+    return missing;
+}
+// update marks for students with missing marks
+void updateMarks(Student students[], int n) {
+    int roll_no;
+    bool found = false;
+    cout << "Enter the roll no. of the student whose marks you want to update: ";
+    cin >> roll_no;
+    for (int i = 0; i < n; i++) {
+        if (students[i].roll_no == roll_no) {
+            cout << "Enter the new marks for student with roll no. " << roll_no << ": ";
+            cin >> students[i].marks;
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        cout << "Student with roll no. " << roll_no << " not found." << endl;
+    }
+    cout<<endl;
+}
+// To display the updated list of students
+void displayUpdated(Student students[], int n) {
+    cout << "List of Students with marks: " << endl;
+    for (int i = 0; i < n; i++) {
+        cout << "Roll Number: " << students[i].roll_no << "  Marks: " << students[i].marks << endl;
+    }
+    cout<<endl;
+}
+// To delete a student by roll number
+void deleteStudent(Student students[], int &n, int roll_no) {
+    int i;
+    for (i = 0; i < n; i++) {
+        if (students[i].roll_no == roll_no) {
+            break;
+        }
+    }
+    if (i < n) {  // Student found
+        for (int j = i; j < n - 1; j++) {
+            students[j] = students[j + 1];
+        }
+        n--;  // Reduce the number of students
+        cout << "Student with roll no. " << roll_no << " deleted." << endl;
+    } else {
+        cout << "Student with roll no. " << roll_no << " not found." << endl;
+    }
+    cout<<endl;
+}
+// To insert a new student into the list
+void insertStudent(Student students[], int &n, Student newStudent) {
+    students[n] = newStudent;
+    n++;  // Increase the number of students
+    cout<<endl;
+}
+// To sort students by roll number using selection sort
+void selectionSort(Student students[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        int minIndex = i;
+        for (int j = i + 1; j < n; j++) {
+            // (>) decending formate & (<) asending formate
+            if (students[j].marks > students[minIndex].marks) {
+                minIndex = j;   
+            }
+        }
+        if (minIndex != i) {
+            swap(students[i], students[minIndex]);
+        }
+    }
+    cout<<endl;
+}
+// To search for a student by roll number using Binary Search
+Student* binarySearch(Student students[], int n, int roll_no) {
+    int left = 0;
+    int right = n - 1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (students[mid].roll_no == roll_no) {
+            return &students[mid];
+        } else if (students[mid].roll_no < roll_no) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    return nullptr;  // Not found
+}
+// Function to display the menu options
+void displayMenu() {
+    cout << "1. Input Students" << endl;
+    cout << "2. Display Students" << endl;
+    cout << "3. Update Marks" << endl;
+    cout << "4. Delete Student" << endl;
+    cout << "5. Insert Student" << endl;
+    cout << "6. Sort Students by Marks" << endl;
+    cout << "7. Search Student by Roll No" << endl;
+    cout << "0. Exit" << endl;
+    cout << endl;
+}
+int main() {
+    Student students[100];
+    int n = 0;
+    int choice;
+    while (true) {
+        displayMenu();
+        cout << "Enter your choice: ";
+        cin >> choice;
+        switch (choice) {
+            case 1:
+                inputStudents(students, n);
+                while (Missing(students, n)) {
+                    updateMarks(students, n);
+                }
+                break;
+            case 2:
+                displayUpdated(students, n);
+                break;
+            case 3:
+                updateMarks(students, n);  // Update marks for a specific student
+                break;
+            case 4: {
+                int roll_no;
+                cout << "Enter roll no. to delete: ";
+                cin >> roll_no;
+                deleteStudent(students, n, roll_no);
+                break;
+            }
+            case 5: {
+                Student newStudent;
+                cout << "Enter roll no. for new student: ";
+                cin >> newStudent.roll_no;
+                cout << "Enter marks for new student: ";
+                cin >> newStudent.marks;
+                insertStudent(students, n, newStudent);
+                break;
+            }
+            case 6:
+                selectionSort(students, n);  // Sorting students by roll number using selection sort
+                cout << "Students sorted by marks." << endl;
+                break;
+            case 7: {
+                int roll_no;
+                cout << "Enter roll no. to search: ";
+                cin >> roll_no;
+                Student* student = binarySearch(students, n, roll_no);  // Searching for a student by roll number using binary search
+                if (student) {
+                    cout << "Roll Number: " << student->roll_no << "  Marks: " << student->marks << endl;
+                } else {
+                    cout << "Student with roll no. " << roll_no << " not found." << endl;
+                }
+                break;
+            }
+            case 0:
+                cout << "Exiting program." << endl;
+                return 0;
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+        }
+    }
+    return 0;
+}
